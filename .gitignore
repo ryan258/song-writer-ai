@@ -9,6 +9,7 @@ node_modules/
 
 # Log files
 *.log
+logs
 
 # Editor directories and files
 .idea
