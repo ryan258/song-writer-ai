@@ -1,7 +1,10 @@
+// tests/ollamaIntegration.test.js
 const ollamaService = require('../services/ollamaService');
 
 describe('Ollama Integration', () => {
   beforeAll(() => {
+    process.env.API_URL = process.env.API_URL || 'http://localhost:11434/api/generate';
+    process.env.MODEL_NAME = process.env.MODEL_NAME || 'llama3.1:latest';
     console.log('API_URL:', process.env.API_URL);
     console.log('MODEL_NAME:', process.env.MODEL_NAME);
   });

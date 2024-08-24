@@ -1,18 +1,18 @@
-// src/services/ollamaService.js
+// services/ollamaService.js
 
 const axios = require('axios')
 const fs = require('fs')
 const path = require('path')
 
-const OLLAMA_API_URL = process.env.API_URL
-const OLLAMA_MODEL_NAME = process.env.MODEL_NAME
+const OLLAMA_API_URL = process.env.API_URL || 'http://localhost:11434/api/generate'
+const OLLAMA_MODEL_NAME = process.env.MODEL_NAME || 'llama3.1:latest'
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions'
-const OPENAI_MODEL_NAME = process.env.OPENAI_MODEL_NAME
+const OPENAI_MODEL_NAME = process.env.OPENAI_MODEL_NAME || 'gpt-3.5-turbo'
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 
 function logSongDrafts(drafts) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const logDir = path.join(__dirname, '..', '..', 'logs')
+  const logDir = path.join(__dirname, '..', 'logs')
   const logFile = path.join(logDir, `${timestamp}.log`)
 
   if (!fs.existsSync(logDir)) {
