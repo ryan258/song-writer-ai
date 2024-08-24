@@ -1,12 +1,35 @@
 // src/services/ollamaService.js
 
 const axios = require('axios')
+const fs = require('fs')
+const path = require('path')
 
 const OLLAMA_API_URL = process.env.API_URL
 const OLLAMA_MODEL_NAME = process.env.MODEL_NAME
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions'
 const OPENAI_MODEL_NAME = process.env.OPENAI_MODEL_NAME
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+
+function logSongDrafts(drafts) {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  const logDir = path.join(__dirname, '..', '..', 'logs')
+  const logFile = path.join(logDir, `${timestamp}.log`)
+
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true })
+  }
+
+  const logContent = drafts.map((draft, index) => `
+Draft ${index + 1}:
+Title: ${draft.title}
+Style: ${draft.style}
+Lyrics:
+${draft.lyrics}
+`).join('\n---\n')
+
+  fs.writeFileSync(logFile, logContent)
+  console.log(`Song drafts logged to ${logFile}`)
+}
 
 async function generateSongDrafts(songIdea, numberOfDrafts, useOpenAI = false) {
   const prompt = `Generate ${numberOfDrafts} song drafts based on this idea: "${songIdea}". For each draft, provide a title (max 80 characters), style (max 120 characters), and lyrics (max 3000 characters, including section headers). Format each draft as follows:
@@ -45,7 +68,9 @@ async function generateSongDrafts(songIdea, numberOfDrafts, useOpenAI = false) {
     const generatedText = useOpenAI
       ? response.data.choices[0].message.content
       : response.data.response
-    return parseSongDrafts(generatedText)
+    const parsedDrafts = parseSongDrafts(generatedText)
+    logSongDrafts(parsedDrafts)
+    return parsedDrafts
   } catch (error) {
     console.error('Error generating song drafts:', error.message)
     if (error.response) {
